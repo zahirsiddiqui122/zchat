@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111b21">
+<title>ZCHAT</title>
+<style>
+:root{box-sizing:border-box;--bg:#0b141a;--pn:#111b21;--bar:#202c33;--out:#005c4b;--tx:#e9edef;--mu:#8696a0;--ac:#00a884;--rd:#e5484d;color-scheme:dark;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html,body{height:100%;margin:0;overflow:hidden}
+body{background:var(--bg);color:var(--tx);font:15px/1.35 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+button,input{font:inherit;color:inherit}button{cursor:pointer;border:0;background:none}
+input{background:var(--bar);border:0;border-radius:8px;padding:11px 12px;outline:0;width:100%}
+.pb{background:var(--ac);color:#04251d;font-weight:700;border-radius:8px;padding:11px 14px;width:100%}.pb:disabled{opacity:.6}
+.boot{height:100%;display:flex;align-items:center;justify-content:center;color:var(--mu);text-align:center;padding:20px}
+#auth{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+.card{width:100%;max-width:340px;background:var(--pn);padding:24px;border-radius:14px;display:flex;flex-direction:column;gap:12px}
+.logo{font-size:34px;font-weight:800;text-align:center;letter-spacing:2px}.logo b{color:var(--ac)}
+.tabs{display:flex;background:var(--bar);border-radius:8px;padding:3px}.tabs button{flex:1;padding:8px;border-radius:6px;color:var(--mu)}.tabs .on{background:var(--ac);color:#04251d;font-weight:700}
+.er{color:var(--rd);min-height:18px;font-size:13px}
+.ft{text-align:center;color:var(--mu);font-size:12px;padding:10px}
+#app{height:100%;display:flex}
+.side{width:340px;display:flex;flex-direction:column;background:var(--pn);border-right:1px solid #222d34;min-height:0}
+.main{flex:1;display:flex;flex-direction:column;min-width:0;min-height:0}
+.hd{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--bar)}.grow{flex:1}
+.ic{font-size:20px;padding:6px 8px;border-radius:50%}.ic:hover{background:#2a3942}
+.add{display:flex;gap:8px;padding:10px}.sm{width:auto}
+.list{flex:1;overflow-y:auto}.hint{color:var(--mu);padding:20px;text-align:center}
+.row{display:flex;gap:12px;padding:10px 14px;cursor:pointer;border-bottom:1px solid #1d282f;align-items:center}.row:hover,.row.act{background:var(--bar)}
+.av{width:42px;height:42px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex:none}
+.rw{min-width:0;flex:1}.nm{font-weight:600}.lp{color:var(--mu);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bdg{background:var(--ac);color:#04251d;border-radius:10px;min-width:20px;padding:0 6px;text-align:center;font-size:12px;font-weight:700}
+.empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--mu);gap:8px;padding:20px;text-align:center}
+.chat{flex:1;display:flex;flex-direction:column;min-height:0}
+#msgs{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;padding:10px 12px}
+.b{max-width:78%;padding:6px 9px;border-radius:8px;margin:3px 0;white-space:pre-wrap;word-break:break-word}
+.b.o{align-self:flex-end;background:var(--out)}.b.i{align-self:flex-start;background:var(--bar)}
+.b img,.b video{max-width:100%;max-height:320px;border-radius:6px;display:block}.b audio{width:230px;max-width:100%}
+.tm{display:block;font-size:11px;color:var(--mu);text-align:right;margin-top:2px}
+.cmp{display:flex;align-items:center;gap:6px;padding:8px;background:var(--bar)}.cmp input{flex:1;background:#2a3942;border-radius:20px}
+#mic.rec{background:var(--rd)}.sd{color:var(--ac)}
+.bk{display:none}
+#call{position:fixed;inset:0;z-index:30;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:calc(40px + env(safe-area-inset-top,0px)) 20px calc(30px + env(safe-area-inset-bottom,0px))}
+#rv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#lv{position:absolute;right:12px;top:calc(12px + env(safe-area-inset-top,0px));width:100px;border-radius:10px;z-index:2;background:#222}
+.ci,.cb{position:relative;z-index:3;text-align:center}.cn{font-size:22px;font-weight:700}.cb{display:flex;gap:28px}
+.rb{width:60px;height:60px;border-radius:50%;background:#2a3942;font-size:24px}.red{background:var(--rd)}.grn{background:var(--ac)}
+#inc{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center}
+.ib{background:var(--pn);padding:28px;border-radius:16px;display:flex;flex-direction:column;gap:14px;align-items:center;text-align:center}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#2a3942;padding:9px 16px;border-radius:20px;z-index:50;max-width:90%;text-align:center}
+@media(max-width:700px){.side{width:100%}.main{display:none}#app.open .side{display:none}#app.open .main{display:flex}.bk{display:inline-block}}
+</style></head><body>
+<div id="boot" class="boot">ZCHAT load ho raha hai...</div>
+<div id="auth" hidden>
+<div class="card"><div class="logo">Z<b>CHAT</b></div>
+<div class="tabs"><button id="tIn" class="on">Login</button><button id="tUp">Sign up</button></div>
+<input id="u" placeholder="Username" autocomplete="username" autocapitalize="none" maxlength="20">
+<input id="p" type="password" placeholder="Password" autocomplete="current-password">
+<div id="er" class="er"></div><button id="go" class="pb">Login</button></div>
+<div class="ft">made by zahir</div></div>
+<div id="app" hidden>
+<aside class="side"><div class="hd"><b id="meName" class="grow"></b><button id="bell" class="ic" title="Notifications">🔔</button><button id="out" class="ic" title="Logout">⎋</button></div>
+<div class="add"><input id="addIn" placeholder="Username add karein" autocapitalize="none"><button id="addBt" class="pb sm">Add</button></div>
+<div id="list" class="list"></div><div class="ft">made by zahir</div></aside>
+<section class="main">
+<div id="empty" class="empty"><div class="logo">Z<b>CHAT</b></div><div>Chat shuru karne ke liye kisi ka username add karein</div></div>
+<div id="chat" class="chat" hidden>
+<div class="hd"><button id="back" class="ic bk">←</button><b id="peerName" class="grow"></b><button id="cv" class="ic">📞</button><button id="cx" class="ic">🎥</button></div>
+<div id="msgs"></div>
+<div class="cmp"><button id="att" class="ic">📎</button><input id="txt" placeholder="Message likhein" autocomplete="off"><button id="mic" class="ic">🎤</button><button id="snd" class="ic sd">➤</button><input id="file" type="file" accept="image/*,video/*" hidden></div>
+</div></section></div>
+<div id="call" hidden><video id="rv" autoplay playsinline></video><video id="lv" autoplay playsinline muted></video>
+<div class="ci"><div id="cn" class="cn"></div><div id="cs"></div></div>
+<div class="cb"><button id="mu" class="rb">🎙️</button><button id="hu" class="rb red">📵</button></div></div>
+<div id="inc" hidden><div class="ib"><div id="in" class="cn"></div><div id="it"></div><div class="cb"><button id="dc" class="rb red">✖</button><button id="ac" class="rb grn">✔</button></div></div></div>
+<div id="toast" hidden></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SB_URL='https://ndedmkbzzaxrnmiamuwe.supabase.co',SB_KEY='sb_publishable_Z6Ynm5oCkrUpnHAUPEgPlg_bNQwJj_c';
+const ICE={iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}]};
+const sb=supabase.createClient(SB_URL,SB_KEY),
+$=s=>document.querySelector(s),
+el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e},
+hue=s=>[...s].reduce((a,c)=>a*31+c.charCodeAt(0),7)%360;
+let me,peer,people={},convs={},seen=new Set(),msgCh,callCh,outCh={},mode='in',busy=false,tt,actx,
+pc,ls,callId,cpeer,incoming,ringT,rec,chunks=[];
+
+function toast(m,keep){const t=$('#toast');clearTimeout(tt);t.textContent=m||'';t.hidden=!m;if(m&&!keep)tt=setTimeout(()=>t.hidden=true,3500)}
+function setMode(m){mode=m;$('#tIn').classList.toggle('on',m==='in');$('#tUp').classList.toggle('on',m==='up');$('#go').textContent=m==='in'?'Login':'Account banayein';$('#p').autocomplete=m==='in'?'current-password':'new-password';$('#er').textContent=''}
+function beep(){try{actx=actx||new AudioContext();actx.resume();const o=actx.createOscillator(),g=actx.createGain();o.connect(g);g.connect(actx.destination);o.frequency.value=880;g.gain.value=.08;o.start();o.stop(actx.currentTime+.15)}catch(e){}}
+function notify(t,b){beep();if(document.hidden){try{if(window.Notification&&Notification.permission==='granted')new Notification(t,{body:b,tag:'zchat'})}catch(e){}}else toast(t+': '+b)}
+function askNotif(){beep();try{Notification.requestPermission().then(p=>toast(p==='granted'?'Notifications on hain':'Notifications block hain')).catch(()=>toast('Notifications available nahi'))}catch(e){toast('Is device mein notifications available nahi')}}
+function updTitle(){const n=Object.values(convs).reduce((a,v)=>a+(v.un||0),0);document.title=n?'('+n+') ZCHAT':'ZCHAT'}
+const prev=m=>m.kind==='text'?(m.body||'').slice(0,40):{image:'📷 Photo',video:'🎥 Video',audio:'🎤 Voice message'}[m.kind]||'';
+
+async function auth(){
+  if(busy)return;const u=$('#u').value.trim().toLowerCase().replace(/^@/,''),p=$('#p').value,er=m=>{$('#er').textContent=m};
+  if(!/^[a-z0-9_]{3,20}$/.test(u))return er('Username 3-20 characters ka ho: a-z, 0-9, _');
+  if(p.length<6)return er('Password kam az kam 6 characters ka ho');
+  busy=true;$('#go').disabled=true;er('');
+  try{
+    const email=u+'@zchat.app';let r;
+    if(mode==='up'){
+      r=await sb.auth.signUp({email,password:p,options:{data:{username:u}}});
+      if(r.error){er(/database|already|registered/i.test(r.error.message)?'Ye username pehle se maujood hai':r.error.message);return}
+      if(!r.data.session)r=await sb.auth.signInWithPassword({email,password:p});
+    }else r=await sb.auth.signInWithPassword({email,password:p});
+    if(r.error){er(/confirm/i.test(r.error.message)?'Supabase mein Confirm email OFF karein':/invalid/i.test(r.error.message)?'Username ya password ghalat hai':r.error.message);return}
+    await enter(r.data.user);
+  }catch(e){er('Masla aaya, internet check karein')}
+  finally{busy=false;$('#go').disabled=false}
+}
+async function enter(user){
+  const{data:pr}=await sb.from('profiles').select('id,username').eq('id',user.id).maybeSingle();
+  if(!pr){await sb.auth.signOut();$('#boot').hidden=true;$('#auth').hidden=false;return toast('Profile nahi mili, dobara sign up karein')}
+  me=pr;people[me.id]=me.username;$('#boot').hidden=true;$('#auth').hidden=true;$('#app').hidden=false;$('#meName').textContent='@'+me.username;
+  await loadConvs();
+  msgCh=sb.channel('msgs').on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},e=>onMsg(e.new)).subscribe();
+  callCh=sb.channel('call:'+me.id).on('broadcast',{event:'sig'},e=>onSig(e.payload)).subscribe();
+}
+async function logout(){
+  endCall(false);try{await sb.removeAllChannels()}catch(e){}outCh={};await sb.auth.signOut();
+  me=peer=null;people={};convs={};seen=new Set();$('#msgs').replaceChildren();$('#chat').hidden=true;$('#empty').hidden=false;
+  $('#app').classList.remove('open');$('#app').hidden=true;$('#auth').hidden=false;$('#p').value='';document.title='ZCHAT';
+}
+async function loadConvs(){
+  const[c,m]=await Promise.all([sb.from('contacts').select('peer').eq('owner',me.id),sb.from('messages').select('*').order('created_at',{ascending:false}).limit(300)]);
+  const ids=new Set((c.data||[]).map(x=>x.peer));convs={};
+  (m.data||[]).forEach(x=>{const o=x.sender===me.id?x.receiver:x.sender;ids.add(o);const v=convs[o]||(convs[o]={un:0});if(!v.last)v.last=x;if(x.receiver===me.id&&!x.read_at)v.un++});
+  const need=[...ids].filter(i=>!people[i]);
+  if(need.length){const{data}=await sb.from('profiles').select('id,username').in('id',need);(data||[]).forEach(p=>people[p.id]=p.username)}
+  ids.forEach(i=>{if(!convs[i])convs[i]={un:0}});renderList();updTitle();
+}
+function renderList(){
+  const L=$('#list');L.replaceChildren();const ids=Object.keys(convs).filter(i=>people[i]);
+  if(!ids.length){L.append(el('div','hint','Abhi koi chat nahi. Upar username likh kar add karein.'));return}
+  const t=i=>convs[i].last?new Date(convs[i].last.created_at).getTime():0;
+  ids.sort((a,b)=>t(b)-t(a)).forEach(i=>{
+    const v=convs[i],n=people[i],r=el('div','row'+(peer&&peer.id===i?' act':'')),av=el('div','av',n[0].toUpperCase()),w=el('div','rw');
+    av.style.background='hsl('+hue(n)+',55%,42%)';w.append(el('div','nm','@'+n),el('div','lp',v.last?prev(v.last):''));r.append(av,w);
+    if(v.un)r.append(el('div','bdg',v.un));r.onclick=()=>openChat(i);L.append(r)});
+}
+async function addUser(){
+  const u=$('#addIn').value.trim().toLowerCase().replace(/^@/,'');if(!u)return;
+  if(u===me.username)return toast('Apne aap ko add nahi kar sakte');
+  try{
+    const{data:p}=await sb.from('profiles').select('id,username').eq('username',u).maybeSingle();
+    if(!p)return toast('Ye username nahi mila');
+    people[p.id]=p.username;
+    const{error}=await sb.from('contacts').upsert({owner:me.id,peer:p.id},{onConflict:'owner,peer',ignoreDuplicates:true});
+    if(error)throw error;
+    if(!convs[p.id])convs[p.id]={un:0};$('#addIn').value='';renderList();openChat(p.id);
+  }catch(e){toast('Add nahi ho saka, dobara try karein')}
+}
+async function openChat(id){
+  peer={id,username:people[id]};seen=new Set();$('#msgs').replaceChildren();$('#empty').hidden=true;$('#chat').hidden=false;
+  $('#app').classList.add('open');$('#peerName').textContent='@'+peer.username;renderList();
+  const{data}=await sb.from('messages').select('*').or('and(sender.eq.'+me.id+',receiver.eq.'+id+'),and(sender.eq.'+id+',receiver.eq.'+me.id+')').order('created_at',{ascending:false}).limit(100);
+  if(!peer||peer.id!==id)return;
+  (data||[]).reverse().forEach(addMsg);scrollEnd();markRead(id);
+}
+const scrollEnd=()=>{const m=$('#msgs');m.scrollTop=m.scrollHeight};
+async function markRead(id){
+  const v=convs[id];if(v&&v.un){v.un=0;renderList();updTitle()}
+  try{await sb.from('messages').update({read_at:new Date().toISOString()}).eq('sender',id).eq('receiver',me.id).is('read_at',null)}catch(e){}
+}
+function addMsg(m){
+  if(seen.has(m.id))return;seen.add(m.id);const b=el('div','b '+(m.sender===me.id?'o':'i')),s=()=>{if(near)scrollEnd()},near=true;
+  if(m.kind==='text')b.textContent=m.body;
+  else if(m.kind==='image'){const i=el('img');i.src=m.media_url;i.alt='photo';i.onload=()=>{const x=$('#msgs');if(x.scrollHeight-x.scrollTop-x.clientHeight<400)scrollEnd()};b.append(i)}
+  else{const v=el(m.kind==='video'?'video':'audio');v.src=m.media_url;v.controls=true;v.preload='metadata';if(m.kind==='video')v.playsInline=true;b.append(v)}
+  b.append(el('span','tm',new Date(m.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})));$('#msgs').append(b);
+}
+function onMsg(m){
+  if(m.sender!==me.id&&m.receiver!==me.id)return;
+  const o=m.sender===me.id?m.receiver:m.sender,inc=m.receiver===me.id,v=convs[o]||(convs[o]={un:0}),open=peer&&peer.id===o;v.last=m;
+  if(open){const x=$('#msgs'),near=x.scrollHeight-x.scrollTop-x.clientHeight<150;addMsg(m);if(near||!inc)scrollEnd();if(inc){if(document.hidden)v.un++;else markRead(o)}}
+  else if(inc)v.un++;
+  if(inc&&(document.hidden||!open))notify('@'+(people[o]||'Naya message'),prev(m));
+  if(!people[o])loadConvs();else{renderList();updTitle()}
+}
+async function send(row,to=peer){
+  if(!to)return;const{data,error}=await sb.from('messages').insert({receiver:to.id,...row}).select().single();if(error)throw error;
+  const v=convs[to.id]||(convs[to.id]={un:0});v.last=data;if(peer&&peer.id===to.id){addMsg(data);scrollEnd()}renderList();
+}
+async function sendTxt(){const i=$('#txt'),x=i.value.trim();if(!x)return;i.value='';try{await send({kind:'text',body:x})}catch(e){i.value=x;toast('Message nahi gaya')}}
+async function up(b,t){
+  t=(t||b.type||'application/octet-stream').split(';')[0];const ext=(t.split('/')[1]||'bin').replace(/[^a-z0-9]/gi,'')||'bin',path=me.id+'/'+Date.now()+'_'+Math.random().toString(36).slice(2,7)+'.'+ext;
+  const{error}=await sb.storage.from('media').upload(path,b,{contentType:t});if(error)throw error;return sb.storage.from('media').getPublicUrl(path).data.publicUrl;
+}
+async function sendFile(e){
+  const f=e.target.files[0],to=peer;e.target.value='';if(!f||!to)return;
+  if(f.size>19*1048576)return toast('File 19 MB se choti honi chahiye');
+  try{toast('Bhej rahe hain...',1);await send({kind:f.type.startsWith('video')?'video':'image',media_url:await up(f)},to);toast('')}catch(x){toast('Upload nahi ho saka')}
+}
+async function micToggle(){
+  if(rec){rec.stop();return}
+  const to=peer;if(!to)return;
+  try{
+    const st=await navigator.mediaDevices.getUserMedia({audio:true});chunks=[];const r=rec=new MediaRecorder(st);
+    r.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
+    r.onstop=async()=>{
+      st.getTracks().forEach(t=>t.stop());$('#mic').classList.remove('rec');rec=null;
+      const mt=(r.mimeType||'audio/webm').split(';')[0],blob=new Blob(chunks,{type:mt});if(blob.size<1000)return toast('');
+      try{toast('Voice bhej rahe hain...',1);await send({kind:'audio',media_url:await up(blob,mt)},to);toast('')}catch(e){toast('Voice nahi gayi')}
+    };
+    r.start();$('#mic').classList.add('rec');toast('Record ho raha hai, dobara mic dabayein',1);
+  }catch(e){rec=null;toast('Mic ki ijazat nahi mili')}
+}
+function sigTo(id,p){
+  return new Promise(res=>{
+    let c=outCh[id];const go=()=>{c.send({type:'broadcast',event:'sig',payload:{...p,from:me.id,name:me.username}}).then(res).catch(res)};
+    if(!c){c=outCh[id]=sb.channel('call:'+id);c.subscribe(s=>{if(s==='SUBSCRIBED')go()});setTimeout(res,6000)}else go();
+  });
+}
+function gathered(p){return new Promise(r=>{if(p.iceGatheringState==='complete')return r();const f=()=>{if(p.iceGatheringState==='complete'){p.removeEventListener('icegatheringstatechange',f);r()}};p.addEventListener('icegatheringstatechange',f);setTimeout(r,4000)})}
+async function media(v){ls=await navigator.mediaDevices.getUserMedia({audio:true,video:v?{facingMode:'user'}:false});$('#lv').srcObject=ls;$('#lv').hidden=!v}
+function mk(){
+  const p=pc=new RTCPeerConnection(ICE);
+  p.ontrack=e=>{const r=$('#rv');r.srcObject=e.streams[0];r.play().catch(()=>{});$('#cs').textContent='Connected'};
+  p.onconnectionstatechange=()=>{if(p!==pc)return;const s=p.connectionState;
+    if(s==='failed'||s==='closed'){toast('Call khatam');endCall(true)}else if(s==='disconnected')$('#cs').textContent='Reconnecting...';else if(s==='connected')$('#cs').textContent='Connected'};
+  ls.getTracks().forEach(t=>p.addTrack(t,ls));
+}
+function showCall(n,s){$('#cn').textContent='@'+n;$('#cs').textContent=s;$('#mu').textContent='🎙️';$('#call').hidden=false}
+async function startCall(v){
+  const to=peer;if(!to||cpeer||incoming)return;cpeer=to.id;
+  try{
+    showCall(to.username,'Calling...');await media(v);mk();callId=me.id.slice(0,6)+Date.now();
+    await pc.setLocalDescription(await pc.createOffer());await gathered(pc);
+    await sigTo(to.id,{t:'offer',id:callId,v:v?1:0,sdp:pc.localDescription.sdp});
+    $('#cs').textContent='Ringing...';ringT=setTimeout(()=>{if(pc&&pc.connectionState!=='connected'){toast('Jawab nahi mila');endCall(true)}},45000);
+  }catch(e){toast('Call nahi lag saki. Camera/mic ki ijazat check karein');endCall(false)}
+}
+function showIncoming(d){
+  incoming=d;notify('@'+d.name,d.v?'Video call aa rahi hai':'Voice call aa rahi hai');$('#in').textContent='@'+d.name;$('#it').textContent=d.v?'Incoming video call':'Incoming voice call';$('#inc').hidden=false;
+  clearTimeout(ringT);ringT=setTimeout(()=>{if(incoming&&!pc)endCall(false)},45000);
+}
+async function accept(){
+  const d=incoming;if(!d)return;clearTimeout(ringT);$('#inc').hidden=true;cpeer=d.from;callId=d.id;
+  try{
+    showCall(d.name,'Connecting...');await media(!!d.v);mk();
+    await pc.setRemoteDescription({type:'offer',sdp:d.sdp});
+    await pc.setLocalDescription(await pc.createAnswer());await gathered(pc);
+    await sigTo(d.from,{t:'answer',id:d.id,sdp:pc.localDescription.sdp});
+  }catch(e){toast('Call connect nahi hui');endCall(true)}
+}
+function endCall(n){
+  const o=cpeer||(incoming&&incoming.from),id=callId||(incoming&&incoming.id);
+  if(n&&o&&id&&me)sigTo(o,{t:'end',id});
+  clearTimeout(ringT);if(pc){const p=pc;pc=null;p.close()}
+  if(ls)ls.getTracks().forEach(t=>t.stop());ls=null;callId=cpeer=incoming=null;
+  $('#rv').srcObject=null;$('#lv').srcObject=null;$('#call').hidden=true;$('#inc').hidden=true;
+}
+function onSig(p){
+  if(!p||!p.id||p.from===me.id)return;
+  if(p.t==='end'){if(p.id===callId||(incoming&&incoming.id===p.id)){toast('Call khatam');endCall(false)}}
+  else if(p.t==='offer'){if(!pc&&!incoming&&!cpeer)showIncoming(p);else sigTo(p.from,{t:'end',id:p.id})}
+  else if(p.t==='answer'&&p.id===callId&&pc&&!pc.currentRemoteDescription)pc.setRemoteDescription({type:'answer',sdp:p.sdp}).catch(()=>endCall(true));
+}
+$('#tIn').onclick=()=>setMode('in');$('#tUp').onclick=()=>setMode('up');$('#go').onclick=auth;
+$('#u').onkeydown=$('#p').onkeydown=e=>{if(e.key==='Enter')auth()};
+$('#out').onclick=logout;$('#bell').onclick=askNotif;$('#addBt').onclick=addUser;$('#addIn').onkeydown=e=>{if(e.key==='Enter')addUser()};
+$('#back').onclick=()=>$('#app').classList.remove('open');
+$('#snd').onclick=sendTxt;$('#txt').onkeydown=e=>{if(e.key==='Enter')sendTxt()};
+$('#att').onclick=()=>$('#file').click();$('#file').onchange=sendFile;$('#mic').onclick=micToggle;
+$('#cv').onclick=()=>startCall(false);$('#cx').onclick=()=>startCall(true);
+$('#hu').onclick=()=>endCall(true);$('#dc').onclick=()=>endCall(true);$('#ac').onclick=accept;
+$('#mu').onclick=()=>{if(!ls)return;const a=ls.getAudioTracks(),en=a[0]?!a[0].enabled:true;a.forEach(t=>t.enabled=en);$('#mu').textContent=en?'🎙️':'🔇'};
+document.addEventListener('click',()=>{try{actx=actx||new AudioContext();actx.resume()}catch(e){}},{once:true});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&peer&&me)markRead(peer.id)});
+(async()=>{
+  try{const{data:{session}}=await sb.auth.getSession();if(session){await enter(session.user);return}}catch(e){}
+  $('#boot').hidden=true;$('#auth').hidden=false;
+})();
+</script></body></html>
